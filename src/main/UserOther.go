@@ -8,8 +8,8 @@ import (
 )
 
 var where func() = func() {
-	_, file, line,_ := runtime.Caller(1)
-	log.Printf("%s:%d",file,line)
+	_, file, line, _ := runtime.Caller(1)
+	log.Printf("%s:%d", file, line)
 }
 
 func main() {
@@ -22,17 +22,42 @@ func main() {
 	trans.PrintNumber10()
 	trans.Forrange()
 	trans.SkipLabel()
-	fmt.Println(trans.Operint(5,3))
-	fmt.Println(trans.Operint1(5,2))
+	fmt.Println(trans.Operint(5, 3))
+	fmt.Println(trans.Operint1(5, 2))
 	trans.CreateStrings()
 	trans.CreatePerson()
 	trans.PringFabonacci(20)
 	trans.PrintNumber10Back(10)
 	trans.GetSum(1e6)
 
-	f := trans.Fabnacci()
-	for i := 1; i <= 20; i++ {
-		fmt.Print(f(i),"  ")
-	}
-}
+	trans.PringFabonacci1(41)
+	trans.PringFabonacci2(41)
 
+	trans.ConsumeTime()
+
+	trans.TestArrry()
+
+	trans.PrintFabicaaiArray(2)
+
+	trans.SliceTest()
+
+	trans.ByteBufferTest()
+
+	trans.Multidim_arrary()
+
+	trans.SliceTest1()
+
+	trans.CopyAndAppendSlice()
+
+	trans.OperationSlice()
+
+	trans.ByteArrTest()
+
+	trans.ReadFile()
+
+	trans.OperationString()
+
+	trans.OperationIntArr()
+
+	trans.OpertatonMap()
+}
