@@ -2,17 +2,47 @@ package trans
 
 import (
 	"bytes"
+	"container/list"
 	"fmt"
 	"io/ioutil"
+	"math"
+	"math/big"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
+	"sync"
+	"syscall"
 	"time"
+	"unsafe"
 )
 
 const LIM = 41
+const LINUX_REBOOT_MAGIC1 uintptr = 0xfee1dead
+const LINUX_REBOOT_MAGIC2 uintptr = 672274793
+const LINUX_REBOOT_CMD_RESTART uintptr = 0x1234567
 
 var fibs [LIM]uint64
+
+var Days = map[int]string{1: "monday",
+	2: "tuesday",
+	3: "wednesday",
+	4: "thursday",
+	5: "friday",
+	6: "saturday",
+	7: "sunday",
+}
+
+var Drinks = map[string]string{
+	"juice":  "果汁",
+	"coke":   "可乐",
+	"sprite": "雪碧",
+}
+
+type Info struct {
+	mu    sync.Mutex
+	value string
+}
 
 func init() {
 	fmt.Println("Hello")
@@ -716,6 +746,7 @@ func CreateMap() {
 	map1 := make(map[int][]int)
 
 	map1[1] = []int{1, 2, 3, 4, 5, 6}
+	map1[2] = []int{2, 2, 3, 4, 54, 56, 6}
 
 	_, ok := map1[2]
 	fmt.Printf("The key is presist: %v", ok)
@@ -725,11 +756,153 @@ func CreateMap() {
 	}
 
 	for key, value := range fnMap {
-		fmt.Printf("The person %v is %v\n", key, value)
+		fmt.Printf("The fnmap %v is %v\n", key, value)
 	}
+
+	delete(map1, 2)
+
+	for key, value := range map1 {
+		fmt.Printf("The map1 %v is %v\n", key, value)
+	}
+
+	capitals := map[string]string{"France": "Paris", "Italy": "Rome", "Japan": "Tokyo"}
+	for key := range capitals {
+		fmt.Println("Map item: Capital of", key, "is", capitals[key])
+	}
+
+	for key := range Days {
+		if Days[key] == "tuesday" {
+			fmt.Printf("The tuesday is exist? The answer is : %v\n", true)
+		}
+		fmt.Println("Map item: Capital of", key, "is", Days[key])
+	}
+
+	items := make([]map[int]int, 5)
+	fmt.Println(items)
+	for index, _ := range items {
+		items[index] = make(map[int]int, 1)
+		items[index][1] = 2
+	}
+
+	fmt.Println(items)
+
+	keys := make([]int, 7)
+
+	i := 0
+	for key, _ := range Days {
+		keys[i] = key
+		i++
+	}
+
+	sort.Ints(keys)
+
+	for _, value := range keys {
+		fmt.Print(value, ":", Days[value], ",")
+	}
+	fmt.Println()
+
+	fmt.Println(Days)
+
+	for orgin := range Drinks {
+		fmt.Print(orgin, " ")
+	}
+
+	fmt.Println()
+	fmt.Println(Drinks)
+	keys1 := make([]string, 3)
+
+	i1 := 0
+	for key1, _ := range Drinks {
+		keys1[i1] = key1
+		i1++
+	}
+
+	sort.Strings(keys1)
+
+	for _, value := range keys1 {
+		fmt.Print(value, ":", Drinks[value], ",")
+	}
+	fmt.Println()
 
 }
 
 func OpertatonMap() {
 	CreateMap()
+}
+
+func CreateList() *list.List {
+	myList := list.New()
+	myList.PushBack(101)
+	myList.PushBack(102)
+	myList.PushBack(103)
+	myList.InsertAfter(104, myList.Front())
+	return myList
+}
+
+func OperationList() {
+	l := CreateList()
+	for e := l.Front(); e != nil; e = e.Next() {
+		fmt.Print(e.Value, " ")
+	}
+	fmt.Println()
+}
+
+func OperationUnsaft() {
+	num := 1
+	sizeof := unsafe.Sizeof(num)
+	fmt.Printf("The int use %d byte\n", sizeof)
+}
+
+func RebootComputer() {
+	syscall.Syscall(syscall.SYS_REBOOT,
+		LINUX_REBOOT_MAGIC1,
+		LINUX_REBOOT_MAGIC2,
+		LINUX_REBOOT_CMD_RESTART)
+}
+
+func RegexpTest() {
+	searchStr := "John: 2673.20 William: 1899.12 steve:293.23"
+	pat := "[0-9]+.[0-9]+"
+
+	f := func(s string) string {
+		f1, _ := strconv.ParseFloat(s, 32)
+		return strconv.FormatFloat(f1*2, 'f', 2, 32)
+	}
+
+	if ok, _ := regexp.Match(pat, []byte(searchStr)); ok {
+		fmt.Println("Match success")
+	}
+
+	compile, _ := regexp.Compile(pat)
+
+	s := compile.ReplaceAllString(searchStr, "**.*")
+	fmt.Printf("The string regexp replace result : %s\n", s)
+	s1 := compile.ReplaceAllStringFunc(searchStr, f)
+	fmt.Printf("The Func regexp replace result : %s\n", s1)
+}
+
+func LockTest() {
+	info := Info{value: "sdsd"}
+	i := &info
+	i.mu.Lock()
+	fmt.Println(i.value)
+	i.mu.Unlock()
+}
+
+func BigIntTest() {
+	// Here are some calculations with bigInts:
+	im := big.NewInt(math.MaxInt64)
+	in := im
+	io := big.NewInt(1956)
+	ip := big.NewInt(1)
+	ip.Mul(im, in).Add(ip, im).Div(ip, io)
+	fmt.Printf("Big Int: %v\n", ip)
+	// Here are some calculations with bigInts:
+	rm := big.NewRat(math.MaxInt64, 1956)
+	rn := big.NewRat(-1956, math.MaxInt64)
+	ro := big.NewRat(19, 56)
+	rp := big.NewRat(1111, 2222)
+	rq := big.NewRat(1, 1)
+	rq.Mul(rm, rn).Add(rq, ro).Mul(rq, rp)
+	fmt.Printf("Big Rat: %v\n", rq)
 }

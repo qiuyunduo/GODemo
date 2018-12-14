@@ -4,8 +4,11 @@ import (
 	"../../pkg/trans"
 	"fmt"
 	"log"
+	"path"
 	"runtime"
 )
+
+import . "sort"
 
 var where func() = func() {
 	_, file, line, _ := runtime.Caller(1)
@@ -60,4 +63,19 @@ func main() {
 	trans.OperationIntArr()
 
 	trans.OpertatonMap()
+
+	trans.RebootComputer()
+
+	trans.OperationUnsaft()
+
+	trans.OperationList()
+
+	trans.RegexpTest()
+
+	trans.LockTest()
+
+	trans.BigIntTest()
+	fmt.Println(path.Base("doc/001.txt"))
+
+	Ints([]int{1, 2, 3, 4, 5, 6})
 }
